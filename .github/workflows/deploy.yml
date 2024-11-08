@@ -17,7 +17,15 @@ jobs:
           python-version: "3.10"
 
       - name: Deploy Application
+        shell: powershell
         run: |
           robocopy '.' 'C:\CadDo\FutureETL\' /E /XD '.git' '.github' '.venv' '.pytest_cache'
-          if ($LASTEXITCODE -gt 8) { exit 1 }
-        shell: powershell
+          $robocopyExitCode = $LASTEXITCODE
+
+          if ($robocopyExitCode -ge 8) {
+            Write-Host "Robocopy failed with exit code $robocopyExitCode"
+            exit 1  # Fail the step
+          } else {
+            Write-Host "Robocopy completed with exit code $robocopyExitCode"
+            exit 0  # Succeed the step
+          }
